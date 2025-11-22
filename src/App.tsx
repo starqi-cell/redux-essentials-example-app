@@ -1,25 +1,32 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import React from "react";
+import {
+  BrowserRouter as Router,
+  useRoutes,
+} from "react-router-dom";
 
-import { Navbar } from './components/Navbar'
+import routes from './router'
+import { Suspense } from 'react'
+
+import { Navbar } from "./components/Navbar";
+import PostsList from "./features/posts/PostsList";
+import AddPostForm from "./features/posts/addPostForm";
+
+// highlight-next-line
+
 
 function App() {
   return (
-    <Router>
+    <div className="app">
       <Navbar />
       <div className="App">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <section>
-                <h2>Welcome to the Redux Essentials example app!</h2>
-              </section>
-            }
-          ></Route>
-        </Routes>
+        <AddPostForm />
+        <PostsList />
+        <Suspense fallback={<div>Loading...</div>}>
+    
+        </Suspense>
       </div>
-    </Router>
-  )
+      </div>
+  );
 }
 
-export default App
+export default App;
