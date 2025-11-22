@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { useAppDispatch } from "../../store";
-import { addPost } from "./postsSlice";
+import { postAdded } from "./postsSlice";
 import { nanoid } from "@reduxjs/toolkit";
+import { useAppSelector } from "../../store";
 
 
 
 const AddPostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [userId, setUserId] = useState("");
 
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
+
+  const users = useAppSelector((state) => state.users);
 
   function onTitleChanged(e: React.ChangeEvent<HTMLInputElement>) {
     setTitle(e.target.value);
@@ -17,17 +21,24 @@ const AddPostForm = () => {
   function onContentChanged(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setContent(e.target.value);
   }
+  function onUserIdChanged(e: React.ChangeEvent<HTMLSelectElement>) {
+    setUserId(e.target.value);
+  }
+
   function handleSubmit() {
     if (title && content) {
-      dispatch(addPost({
-        id: nanoid(),
-        title,
-        content,
-      }));
+      dispatch(postAdded(title, content, userId));
+      };
       setTitle("");
       setContent("");
     }
-  }
+
+    const canSubmit = title && content && userId;
+    const usersOptions = users.map((user) => (
+      <option key={user.id} value={user.id}>
+        {user.name}
+      </option>
+    ));
 
   return (
     <section>
@@ -41,6 +52,11 @@ const AddPostForm = () => {
           value={title}
           onChange={onTitleChanged}
         />
+        <label htmlFor="userId">作者:</label>
+        <select id="userId" name="userId" value={userId} onChange={onUserIdChanged}>
+          <option value="">请选择作者</option>
+          {usersOptions}
+        </select>
         <label htmlFor="postContent">内容：</label>
         <textarea
           id="postContent"
@@ -48,10 +64,11 @@ const AddPostForm = () => {
           value={content}
           onChange={onContentChanged}
         />
-        <button type="button" onClick={handleSubmit}>保存文章</button>
+        <button type="button" onClick={handleSubmit} disabled={!canSubmit}>保存文章</button>
       </form>
     </section>
   );
 };
+
 
 export default AddPostForm 

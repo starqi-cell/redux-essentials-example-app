@@ -8,8 +8,9 @@ import routes from './router'
 import { Suspense } from 'react'
 
 import { Navbar } from "./components/Navbar";
-import PostsList from "./features/posts/PostsList";
+import PostsList from "./features/posts/postsList";
 import AddPostForm from "./features/posts/addPostForm";
+import EditPostForm from "./features/posts/editPostForm";
 
 // highlight-next-line
 
@@ -20,9 +21,9 @@ function App() {
       <Navbar />
       <div className="App">
         <AddPostForm />
-        <PostsList />
+
         <Suspense fallback={<div>Loading...</div>}>
-    
+          {useRoutes(routes)}
         </Suspense>
       </div>
       </div>
