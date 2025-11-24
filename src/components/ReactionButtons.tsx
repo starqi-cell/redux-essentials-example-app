@@ -1,12 +1,12 @@
 import React from "react";
-import { Posts } from '../features/posts/postsSlice';
+import { Posts } from '../features/posts/store/posts';
 import { useAppDispatch, useAppSelector } from "../store";
-import { reactionAdded } from '../features/posts/postsSlice';
+import { reactionAdded } from '../features/posts/store/posts';
 
 
 const reactionEmoji = {
   thumbsUp: "👍",
-  hooray: "🎉",
+  tada: "🎉",
   heart: "❤️",
   rocket: "🚀",
   eyes: "👀",

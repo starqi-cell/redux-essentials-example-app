@@ -1,19 +1,38 @@
 import React, { useState } from "react";
-import { useAppDispatch } from "../../store";
-import { postAdded } from "./postsSlice";
+import { useAppDispatch } from "../../../store";
 import { nanoid } from "@reduxjs/toolkit";
-import { useAppSelector } from "../../store";
-
+import { useAppSelector } from "../../../store";
+import { addNewPost } from "../store/posts";
 
 
 const AddPostForm = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [userId, setUserId] = useState("");
+  const [addRequestStatus, setAddRequestStatus] = useState('idle');
 
   const dispatch = useAppDispatch();
 
   const users = useAppSelector((state) => state.users);
+
+  const canSave =
+    [title, content, userId].every(Boolean) && addRequestStatus === 'idle'
+
+  const onSavePostClicked = async () => {
+    if (canSave) {
+      try {
+        setAddRequestStatus('pending')
+        await dispatch(addNewPost({ title, content, userId })).unwrap()
+        setTitle('')
+        setContent('')
+        setUserId('')
+      } catch (err) {
+        console.error('Failed to save the post: ', err)
+      } finally {
+        setAddRequestStatus('idle')
+      }
+    }
+  }
 
   function onTitleChanged(e: React.ChangeEvent<HTMLInputElement>) {
     setTitle(e.target.value);
@@ -25,15 +44,6 @@ const AddPostForm = () => {
     setUserId(e.target.value);
   }
 
-  function handleSubmit() {
-    if (title && content) {
-      dispatch(postAdded(title, content, userId));
-      };
-      setTitle("");
-      setContent("");
-    }
-
-    const canSubmit = title && content && userId;
     const usersOptions = users.map((user) => (
       <option key={user.id} value={user.id}>
         {user.name}
@@ -64,7 +74,7 @@ const AddPostForm = () => {
           value={content}
           onChange={onContentChanged}
         />
-        <button type="button" onClick={handleSubmit} disabled={!canSubmit}>保存文章</button>
+        <button type="button" onClick={onSavePostClicked} disabled={!canSave}>保存文章</button>
       </form>
     </section>
   );

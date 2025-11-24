@@ -2,16 +2,16 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { postUpdated } from "./postsSlice";
-import { useAppSelector, useAppDispatch } from "../../store";
+import { postUpdated } from "../store/posts";
+import { useAppSelector, useAppDispatch } from "../../../store";
+import { selectPostById } from "../store/posts";
+
+
 
 const EditPostForm = () => {
   const { postId } = useParams<{ postId: string }>();
-
-
-  const post = useAppSelector((state) =>
-    state.posts.find((post) => post.id === postId)
-  );
+  const post = useAppSelector((state) => selectPostById(state, postId!));
+  
   if (!post) {
     return (
       <section>
@@ -57,6 +57,7 @@ const EditPostForm = () => {
         <textarea
           id="postContent"
           name="postContent"
+          className="textarea-style"
           value={content}
           onChange={onContentChanged}
         />

@@ -7,16 +7,18 @@ import store from './store'
 import './primitiveui.css'
 import './index.css'
 import { HashRouter } from 'react-router-dom'
-
+import { fetchUsers } from './features/users/store/users'
 
 async function start() {
   await worker.start({ onUnhandledRequest: 'bypass' })
   const root = createRoot(document.getElementById('root')!)
-  
+
+  store.dispatch(fetchUsers())
+
   root.render(
     <React.StrictMode>
-      <Provider store={store}>
-        <HashRouter>
+      <Provider store={store} >
+        <HashRouter future={{ v7_startTransition: true }}>
           <App />
         </HashRouter>
       </Provider>
