@@ -1,5 +1,6 @@
-import { createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk,createEntityAdapter } from '@reduxjs/toolkit'
 import hyRequest from '@/service' 
+
 
 
 export function getPosts(){

@@ -3,6 +3,7 @@ import { useAppDispatch } from "../../../store";
 import { nanoid } from "@reduxjs/toolkit";
 import { useAppSelector } from "../../../store";
 import { addNewPost } from "../store/posts";
+import { selectAllUsers } from '../../users/store/users';
 
 
 const AddPostForm = () => {
@@ -13,7 +14,7 @@ const AddPostForm = () => {
 
   const dispatch = useAppDispatch();
 
-  const users = useAppSelector((state) => state.users);
+  const users = useAppSelector(selectAllUsers);
 
   const canSave =
     [title, content, userId].every(Boolean) && addRequestStatus === 'idle'
