@@ -6,12 +6,8 @@ import {
 import routes from './router'
 import { Suspense } from 'react'
 
-import { Navbar } from "./components/Navbar";
-import AddPostForm from "./features/posts/componments/addPostForm";
-
-
-// highlight-next-line
-
+import { Navbar } from "./componments/Navbar";
+import AddPostForm from "./features/posts/components/addPostForm";
 
 function App() {
   return (

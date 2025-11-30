@@ -37,7 +37,6 @@ const notificationsSlice = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
-    // 标记所有通知为已读
     allNotificationsRead(state) {
       Object.values(state.entities).forEach(notification => {
         notification.read = true
@@ -47,7 +46,6 @@ const notificationsSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchNotifications.fulfilled, (state, action) => {
       Object.values(state.entities).forEach(notification => {
-        // Any notifications we've read are no longer new
         notification.isNew = !notification.read
       })
       notificationsAdapter.upsertMany(state, action.payload)

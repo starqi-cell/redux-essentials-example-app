@@ -1,4 +1,3 @@
-import React from "react";
 import { Posts } from '../features/posts/store/posts';
 import { useAppDispatch, useAppSelector } from "../store";
 import { reactionAdded } from '../features/posts/store/posts';

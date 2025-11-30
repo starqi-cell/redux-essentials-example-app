@@ -1,4 +1,3 @@
-import React from "react";
 import { parseISO, formatDistanceToNow } from "date-fns";
 
 export const TimeAgo = ({ timestamp }: { timestamp: string }) => {
@@ -15,3 +14,5 @@ export const TimeAgo = ({ timestamp }: { timestamp: string }) => {
     </span>
   );
 };
+
+export default TimeAgo;

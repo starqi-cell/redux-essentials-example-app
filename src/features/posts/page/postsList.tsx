@@ -1,21 +1,34 @@
-import React, { useEffect } from 'react'
-import { Spinner } from '../../../components/Spinner';
-import { useAppSelector,useAppDispatch } from "../../../store";
+import React, { useMemo } from 'react'
+import { Spinner } from '../../../componments/Spinner';
 import { Link } from "react-router-dom";
-import { PostAuthor } from "../../../components/PostAuthor";
-import { TimeAgo } from "../../../components/Timeago";
-import { ReactionButtons } from "../../../components/ReactionButtons";
-import {   
-  selectAllPosts,
-  fetchPosts,
-  selectPostIds,
-  selectPostById 
-} from '../store/posts';
-import { Posts } from '../store/posts';
+import { PostAuthor } from "../../../componments/PostAuthor";
+import { TimeAgo } from "../../../componments/TimeAgo";
+import { ReactionButtons } from "../../../componments/ReactionButtons";
+import { useGetPostsQuery } from "../../api/apiSlice";
+import classnames from "classnames";
 
-const PostExcerpt: React.FC<{ postId: string }> = ({ postId }) => {
-  const post = useAppSelector(state => selectPostById(state, postId))
+type Post = {
+  id: string;
+  title: string;
+  user: string;
+  date: string;
+  content: string;
+  reactions: {
+    thumbsUp: number;
+    hooray: number;
+    heart: number;
+    rocket: number;
+    eyes: number;
+  };
+  [key: string]: any;
+};
 
+interface PostExcerptProps {
+  post: Post;
+}
+
+// highlight-next-line
+let PostExcerpt = ({ post }: PostExcerptProps) => {
   return (
     <article className="post-excerpt" key={post.id}>
       <h3>{post.title}</h3>
@@ -30,43 +43,56 @@ const PostExcerpt: React.FC<{ postId: string }> = ({ postId }) => {
         View Post
       </Link>
     </article>
-  )
-}
+  );
+};
 
-const MemoizedPostExcerpt = React.memo(PostExcerpt);
+export const PostsList = () => {
+  const {
+    data: posts = [],
+    isLoading,
+    isFetching,
+    isSuccess,
+    isError,
+    error,
+    // highlight-next-line
+    refetch,
+  } = useGetPostsQuery('');
 
-const PostsList = () => {
-  const dispatch = useAppDispatch();
-  const orderedPostIds = useAppSelector(selectPostIds)
+  // highlight-start
+  const sortedPosts = useMemo(() => {
+    const sortedPosts = posts.slice();
+    // Sort posts in descending chronological order
+    sortedPosts.sort((a: Post, b: Post) => b.date.localeCompare(a.date));
+    return sortedPosts;
+  }, [posts]);
+  // highlight-end
 
-  const postStatus = useAppSelector((state) => state.posts.status);
-  const error = useAppSelector((state) => state.posts.error);
+  let content;
 
-  useEffect(() => {
-    if (postStatus === 'idle')
-    dispatch(fetchPosts());
-  }, [postStatus, dispatch]);
+  if (isLoading) {
+    content = <Spinner text="Loading..." />;
+  } else if (isSuccess) {
+    // highlight-start
+    const renderedPosts = sortedPosts.map((post: Post) => (
+      <PostExcerpt key={post.id} post={post} />
+    ));
 
+    const containerClassname = classnames("posts-container", {
+      disabled: isFetching,
+    });
 
-  let content
-
-    if (postStatus === 'loading') {
-      content = <Spinner text="Loading..." />
-    } else if (postStatus === 'succeeded') {
-
-      content = orderedPostIds.map(postId => (
-        <MemoizedPostExcerpt key={postId} postId={postId} />
-      ))
-    } else if (postStatus === 'failed') {
-      content = <div>{error}</div>
-    }
+    content = <div className={containerClassname}>{renderedPosts}</div>;
+    // highlight-end
+  } else if (isError) {
+    content = <div>{error.toString()}</div>;
+  }
 
   return (
     <section className="posts-list">
-      <h2>Posts</h2>
+      <button onClick={refetch}>更新帖子</button>
       {content}
     </section>
   );
 };
 
-export default PostsList
+export default PostsList;

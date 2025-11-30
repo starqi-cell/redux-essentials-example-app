@@ -1,34 +1,44 @@
-import { Link, useParams } from "react-router-dom";
-import { useAppSelector } from "../../../store";
-import { selectPostById } from "../store/posts";
+import React from "react";
+import { Link,useParams } from "react-router-dom";
 
-const SinglePostPage = () => {
+// highlight-start
+import { Spinner } from "../../../componments/Spinner";
+import { useGetPostQuery } from "../../api/apiSlice";
+// highlight-end
+
+import { PostAuthor } from "../../../componments/PostAuthor";
+import { TimeAgo } from "../../../componments/TimeAgo";
+import { ReactionButtons } from "../../../componments/ReactionButtons";
+
+export const SinglePostPage = () => {
   const { postId } = useParams<{ postId: string }>();
 
-  const post = useAppSelector((state) => selectPostById(state, postId!));
+  // highlight-next-line
+  const { data: post, isFetching, isSuccess } = useGetPostQuery(postId);
 
-  if (!post) {
-    return (
-      <section>
-        <h2>页面未找到！</h2>
-      </section>
+  let content;
+  // highlight-start
+  if (isFetching) {
+    content = <Spinner text="Loading..." />;
+  } else if (isSuccess) {
+    // highlight-end
+    content = (
+      <article className="post">
+        <h2>{post.title}</h2>
+        <div>
+          <PostAuthor userId={post.user} />
+          <TimeAgo timestamp={post.date} />
+        </div>
+        <p className="post-content">{post.content}</p>
+        <ReactionButtons post={post} />
+        <Link to={`/editPost/${post.id}`} className="button">
+          Edit Post
+        </Link>
+      </article>
     );
   }
 
-  return (
-    <section>
-      <article className="post">
-        <h2>{post.title}</h2>
-        <p className="post-content">{post.content}</p>
-        <Link to={`/edit/${post.id}`} className="button muted-button">
-            Edit Post
-        </Link>
-            <Link to="/" className="button muted-button">
-                Back to Posts
-            </Link>
-      </article>
-    </section>
-  );
+  return <section>{content}</section>;
 };
 
 export default SinglePostPage;
