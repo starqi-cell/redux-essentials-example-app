@@ -2,11 +2,12 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { useAppSelector } from '../../../store'
+import { RootState } from '../../../store/index'
 
 const UsersList = () => {
-  const users = useAppSelector(state => state.users)
+  const users = useAppSelector((state: RootState) => (state.users as any));
 
-  const renderedUsers = users.ids.map(id => {
+  const renderedUsers = users.ids.map((id: any) => {
     const user = users.entities[id]
     if (!user) return null
     return (

@@ -1,29 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
-import { postUpdated } from "../store/posts";
-import { useAppSelector, useAppDispatch } from "../../../store";
-import { selectPostById } from "../store/posts";
-
-
+import { useGetPostQuery, useEditPostMutation } from "../../api/apiSlice";
 
 const EditPostForm = () => {
   const { postId } = useParams<{ postId: string }>();
-  const post = useAppSelector((state) => selectPostById(state, postId!));
-  
+
+  const { data: post } = useGetPostQuery(postId!);
+  const [updatePost, { isLoading }] = useEditPostMutation();
+
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  useEffect(() => {
+    if (post) {
+      setTitle(post.title);
+      setContent(post.content);
+    }
+  }, [post]);
+
+  const navigate = useNavigate();
+
   if (!post) {
     return (
       <section>
-        <h2>页面未找到！</h2>
+        <h2>Loading...</h2>
       </section>
     );
   }
-  
-  const [title, setTitle] = useState(post.title);
-  const [content, setContent] = useState(post.content);
-
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   function onTitleChanged(e: React.ChangeEvent<HTMLInputElement>) {
     setTitle(e.target.value);
@@ -32,9 +36,9 @@ const EditPostForm = () => {
     setContent(e.target.value);
   }
 
-  const onSavePostClicked = () => {
+  const onSavePostClicked = async () => {
     if (title && content) {
-      dispatch(postUpdated({ id: postId, title, content }));
+      await updatePost({ id: postId, title, content });
       navigate(`/posts/${postId}`);
     }
   };

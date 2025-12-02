@@ -1,18 +1,16 @@
-import { Posts } from '../features/posts/store/posts';
-import { useAppDispatch, useAppSelector } from "../store";
-import { reactionAdded } from '../features/posts/store/posts';
-
+import { Posts } from '../features/posts/types';
+import { useAddReactionMutation } from "../features/api/apiSlice";
 
 const reactionEmoji = {
   thumbsUp: "👍",
-  tada: "🎉",
+  hooray: "🎉",
   heart: "❤️",
   rocket: "🚀",
   eyes: "👀",
 };
 
 export const ReactionButtons = ({ post }: { post: Posts }) => {
-  const dispatch = useAppDispatch();
+  const [addReaction] = useAddReactionMutation();
   
   const reactionButtons = Object.entries(reactionEmoji).map(([name, emoji]) => {
     return (
@@ -20,11 +18,9 @@ export const ReactionButtons = ({ post }: { post: Posts }) => {
         key={name}
         type="button"
         className="muted-button reaction-button"
-        // highlight-start
         onClick={() =>
-          dispatch(reactionAdded({ postId: post.id, reaction: name }))
+          addReaction({ postId: post.id, reaction: name })
         }
-        // highlight-end
       >
         {emoji} {post.reactions[name as keyof typeof post.reactions]}
       </button>

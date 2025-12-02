@@ -7,13 +7,13 @@ import store from './store/index'
 import './primitiveui.css'
 import './index.css'
 import { HashRouter } from 'react-router-dom'
-import { fetchUsers } from './features/users/store/users'
+import { extendedApiSlice } from './features/users/store/users'
 
 async function start() {
   await worker.start({ onUnhandledRequest: 'bypass' })
   const root = createRoot(document.getElementById('root')!)
 
-  store.dispatch(fetchUsers())
+  store.dispatch(extendedApiSlice.endpoints.getUsers.initiate())
 
   root.render(
     <React.StrictMode>

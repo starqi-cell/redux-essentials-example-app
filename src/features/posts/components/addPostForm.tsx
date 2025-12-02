@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useAppSelector } from "../../../store";
-import { addNewPost } from "../store/posts";
 import { selectAllUsers } from '../../users/store/users';
 
 import { Spinner } from "../../../componments/Spinner";
